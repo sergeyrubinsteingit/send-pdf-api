@@ -4,15 +4,15 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const baSe64 = require('base64-async');
 const paTh = require('path');
-const httpRequest = require('https');
+//const httpRequest = require('https');
 //const formData = new require('form-data')();
-const formData = require('form-data');
-const fetCh = require('node-fetch');
-const getHeaders = new fetCh.Headers();
+//const formData = require('form-data');
+//const fetCh = require('node-fetch');
+//const getHeaders = new fetCh.Headers();
 const exPress = require('express')();
-const js_pdf = require('jspdf');
-var blOb = require('blob');
-const { StringDecoder } = require('string_decoder');
+//const js_pdf = require('jspdf');
+//var blOb = require('blob');
+//const { StringDecoder } = require('string_decoder');
 
 const pathToPdf = paTh.join(__dirname, 'source/sample_form.pdf');
 let createSamplePdf = new Object;
@@ -51,33 +51,29 @@ createSamplePdf = new Promise((reSolve, reJect) => {
 let encodedFile = new Object();
 
 function getBase64() {
-    return new Promise((resolve, reject) => {
+    new Promise((resolve, reject) => {
         const buFFer = fs.readFileSync(pathToPdf);
         console.log(Buffer.isBuffer(buFFer) ? 'Buffer is created' : 'Buffer was not created');
-        encodedFile = baSe64.encode(buFFer);
-        resolve(); reject();
+        console.log(encodedFile.toString());
         //baSe64.encode(buFFer).then(base64String => console.log(base64String));
+        baSe64.encode(buFFer).then(base64String => sendFormAndAttachment(base64String))
     })
-        .then(
-            sendFormAndAttachment(encodedFile)
-    );
-}
+}//[fn]
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-const sendFormAndAttachment = encodedFile => {
-    const setPort = 3000;
+function sendFormAndAttachment(fileString) {
+    console.log(fileString + ' >>> TEST');
+    const setPort = 8080;
     exPress.get("/", function (req, res) {
         res.set({
             'Content-Type': 'application/pdf;text/plain',
-            'ETag': '12345'
+            'Authorization': 'Bearer'
         });
-        //let data = {
-        //    name: "GFG",
-        //    age: 18,
-        //    male: true
-        //}
-        //res.send(data);
-        res.send(StringDecoder(encodedFile));
+        let data = {
+            name: "Send PDF Api",
+            length: 000000000000000000
+        }
+        res.send(new Buffer.from(fileString, 'base64'));
         //res.sendFile(pathToPdf);
     });
     exPress.listen(setPort, () => {

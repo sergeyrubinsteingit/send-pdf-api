@@ -14,8 +14,23 @@ function createPdf() {
     //The section below is a preparation of JSON for updating:
     //Reading and parsing an existing json data:
     let readJSONdata = fs.readFileSync(pathToJSON);
-    parseJSONdata.push(JSON.parse(readJSONdata));
-    //let parseJSONdata = [JSON.parse(readJSONdata)];
+    parseJSONdata.push(readJSONdata);
+    let parseJson = JSON.parse(readJSONdata);
+
+    // Populating an array with base64 strings:
+    let bs64strings = [];
+    for (key_ in parseJson) {
+        for (val_ in parseJson[key_]) {
+            bs64strings.push(parseJson[key_][val_]);
+        }//[for]
+    }//[for]
+    console.log(bs64strings + "  < bs64strings \n\n\n");
+
+    //Writing the output array of base64 strings to log file:
+    const pathToLog = __dirname + '//source/log_.txt';
+    const myConsole = new console.Console(fs.createWriteStream(pathToLog));
+    myConsole.log(bs64strings);
+
     //Removing 1st element in JSON:
     parseJSONdata.splice(0, 1);
     ///////////////////////////////////////////////////////
@@ -40,6 +55,7 @@ function createPdf() {
             console.log()
             docObj = new PDFDocument; // Create pdf
             docObj.pipe(fs.createWriteStream(pathToPdf));  // Node Stream to save pdf in the root dir
+            docObj.image('source/dog_' + iter + '.jpg', { fit: [100, 300], align: 'center', valign: 'center' }); // adding image
             docObj.fontSize(18).text(
                 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
                 + ' Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,'
@@ -49,7 +65,6 @@ function createPdf() {
                 + 'and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
                 100, 100
             ); // adding text
-            docObj.image('source/dog_' + iter + '.jpg', { fit: [100, 300], align: 'center', valign: 'center' }); // adding image
 
             docObj.end(); // closing file's formation
             return docObj;
@@ -63,17 +78,13 @@ function createPdf() {
             new Promise((resolve, reject) => {
                 const buFFer = fs.readFileSync(pathToPdf);
                 console.log(Buffer.isBuffer(buFFer) ? 'Buffer is created' : 'Buffer was not created');
-                console.log(encodedFile.toString());
-                //baSe64.encode(buFFer).then(base64String => console.log(base64String));
                 baSe64.encode(buFFer).then(base64String => writeToJSON(base64String))
             })
         }//[fn]
 
         function writeToJSON(base64String) {
            //Creating a new data block to append to json:
-            let appendixToJSON = {
-                base64Encoding:base64String
-            };
+            let appendixToJSON = { base64String };
             //Adding a new data block to array to be writen to JSON:
             parseJSONdata.push(appendixToJSON);
             //A new array to be written in JSON instead of former one,
@@ -88,9 +99,8 @@ function createPdf() {
                 {
                     console.log('JSON was updated.');
                 };//[if]
-                /*setTimeout(() => { readFromJSON(); }, 1000);*/
             });
-            readFromJSON();
+            setTimeout(() => { readFromJSON(); }, 1000);
         };//[fn createPdf]
     }//[for]
 
@@ -101,7 +111,7 @@ function createPdf() {
                 console.log("File read failed:", err);
                 return;
             }
-            //console.log("File data:", jsonString);
+            console.log("File data:", jsonString);
         });
     }
 }//[fn]

@@ -5,6 +5,7 @@
 
 const reqHttp = require('http');
 const fs = require('fs');
+const openurl = require('openurl');
 const setPort = 8080;
 
 //Reads base64 strings from json; populates an array with them:
@@ -44,7 +45,15 @@ reqHttp.createServer(function (req_, res_) {
     });//[writeHead]
     res_.end(generateHTML);
     console.log('Remote Client Page - TEST');  ////
-}).listen(setPort);//[fn]
+}).listen(setPort,
+        setTimeout(() => {
+            openurl.open('http://localhost:' + setPort);
+            console.log(`Server is running on localhost-> ${setPort}`);
+        }, 500),//[setTimeout]
+        setTimeout(() => {
+            process.exit();
+}, 1500)//[setTimeout]
+);//[fn]
 
 // Creates a html page to be open on localhost /////////////////////////////////////////
 function createHTML() {

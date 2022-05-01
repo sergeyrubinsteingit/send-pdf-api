@@ -61,7 +61,7 @@ function createHTML() {
             //alert(bs64);
             let pdfWindow = window.open("", "_blank", "top=10,left=10,width=555,height=1000");
                 pdfWindow.document.write( "<iframe width='100%' height='100%' src='data:application/pdf;base64, " + encodeURI(bs64) + "'></iframe>" );//[pdfWindow]
-        };//[fn openPdfFile]
+    };//[fn openPdfFile]
     
     let setHeader = '<style> '
         + 'body {background-color: #54544b;}'

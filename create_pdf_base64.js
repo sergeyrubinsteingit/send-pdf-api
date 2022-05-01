@@ -63,9 +63,10 @@ function createPdf() {
         // Generating pdf file:
         createSamplePdf = new Promise((reSolve, reJect) => {
             //console.log(randomString(15));
-            docObj = new PDFDocument; // Create pdf
+            docObj = new PDFDocument({ margin: 30, size: 'A4' }); // Create pdf
             docObj.pipe(fs.createWriteStream(pathToPdf));  // Node Stream to save pdf in the root dir
-            docObj.image('source/dog_' + iter + '.jpg', { fit: [300, 400], align: 'left', valign: 'center' }); // adding image
+            docObj.image('source/dog_' + iter + '.jpg', 100, 100, { fit: [420, 400], align: 'left', valign: 'center' })
+                .text('Dog-' + iter + '.jpg',100,400); // adding image
             docObj.fillColor('#000000').fontSize(24).text(randomString(15),100,100);
             docObj.fillColor('#7d8276').fontSize(18).text(
                 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
@@ -74,7 +75,7 @@ function createPdf() {
                 + 'It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.'
                 + 'It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, '
                 + 'and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-                100, 400
+                100, 460
             ); // adding text
 
             docObj.end(); // closing file's formation

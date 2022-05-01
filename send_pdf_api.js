@@ -35,7 +35,7 @@ new Promise((resolve, reject) => {
 // Generating pdf file:
 createSamplePdf = new Promise((reSolve, reJect) => {
     console.log()
-    docObj = new PDFDocument; // Create pdf
+    docObj = new PDFDocument({ margin: 30, size: 'A4' }); // Create pdf
     docObj.pipe(fs.createWriteStream(pathToPdf));  // Node Stream to save pdf in the root dir
     docObj.fontSize(18).text('The test-form', 100, 100); // adding text
     docObj.image('source/cesky-krumlov.jpg', { fit: [800, 300], align: 'center', valign: 'center' }); // adding image

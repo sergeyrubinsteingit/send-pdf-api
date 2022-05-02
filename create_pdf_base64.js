@@ -63,25 +63,44 @@ function createPdf() {
         // Generating pdf file:
         createSamplePdf = new Promise((reSolve, reJect) => {
             //console.log(randomString(15));
-            docObj = new PDFDocument({ margin: 30, size: 'A4' }); // Create pdf
-            docObj.pipe(fs.createWriteStream(pathToPdf));  // Node Stream to save pdf in the root dir
-            docObj.image('source/dog_' + iter + '.jpg', 100, 100, { fit: [420, 400], align: 'left', valign: 'center' })
-                .text('Dog-' + iter + '.jpg',100,400); // adding image
-            docObj.fillColor('#000000').fontSize(24).text(randomString(15),100,100);
-            docObj.fillColor('#7d8276').fontSize(18).text(
-                'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
+            const theText = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
                 + ' Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,'
                 + ' when an unknown printer took a galley of type and scrambled it to make a type specimen book.'
                 + 'It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.'
                 + 'It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, '
-                + 'and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-                100, 460
-            ); // adding text
+                + 'and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.';
 
+            docObj = new PDFDocument({ margin: 30, size: 'A4' }); // Create pdf page of size A4
+            docObj.pipe(fs.createWriteStream(pathToPdf));  // Node Stream to save pdf in the root dir
+            docObj.rect(90, 45, 420, 790).fillAndStroke('#ddd', '#ddd').stroke();//[Rectangle frame]
+            let getRandomString = randomString(15);
+            docObj.fillColor('#999999')
+                .font('Helvetica-Bold')
+                .fontSize(24)
+                .text(`${getRandomString}`, 112, 102); //[randomString]
+            docObj.fillColor('#ffffff')
+                .font('Helvetica-Bold')
+                .fontSize(24)
+                .text(`${getRandomString}`, 110, 100); //[randomString]
+
+            docObj.moveDown(2);
+            docObj.image('source/dog_' + iter + '.jpg', 90, 100, { fit: [420, 400], align: 'left', valign: 'center' })
+                .font('Helvetica-Bold').fontSize(10)
+                .text('Dog-' + iter + '.jpg', 110, 430); // adding image
+            docObj.moveDown(11);
+            docObj.fillColor('#444d38').font('Helvetica-Bold').fontSize(22).text(`The Dog`, 110, 450); // adding text
+            docObj.moveDown(0.5);
+            docObj.fillColor('#7d8276').font('Helvetica').fontSize(14).text(` ${theText}`, {
+                columns: 2,
+                columnGap: 15,
+                height: 220,
+                width: 350,
+                align: 'left'
+            }, 500, 110 ); // adding text
             docObj.end(); // closing file's formation
             return docObj;
         })
-            .then(console.log('End of Promise 1'))
+            .then(console.log('createSamplePdf, End of Promise'))
             .then(setTimeout(() => { fs.existsSync(pathToPdf) ? getBase64() : console.log('File does not exist.') }, 1000))
 
         let encodedFile = new Object();

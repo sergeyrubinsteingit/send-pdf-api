@@ -20,9 +20,10 @@ let parseJson = JSON.parse(readJSONdata);
 
 // Populating an array with base64 strings:
 let bs64strings = [];
+let randomStrings = [];
 for (key_ in parseJson) {
     for (val_ in parseJson[key_]) {
-        bs64strings.push(parseJson[key_][val_]);
+        val_ === "bs64str" ? bs64strings.push(parseJson[key_][val_]) : randomStrings.push(parseJson[key_][val_]);
     }//[for]
 }//[for]
         //console.log(bs64strings + "  < bs64strings \n\n\n");
@@ -30,7 +31,7 @@ for (key_ in parseJson) {
 let allDivs = '';
 for (let i = 0; i < bs64strings.length; i++) {
     setTimeout(() => {
-        let divString = '<div class=\"childDiv\" onclick=\"openPdfFile(\'' + bs64strings[i] + '\');\">pdf-file ' + i.toString() + '</div>';
+        let divString = '<div class=\"childDiv\" onclick=\"openPdfFile(\'' + bs64strings[i] + '\',\'' + randomStrings[i] + '\');\">pdf-file # ' + randomStrings[i] + '</div>';
         allDivs += divString;
     },500);//[setTimeout]
 };//[for]
@@ -57,29 +58,29 @@ reqHttp.createServer(function (req_, res_) {
 
 // Creates a html page to be open on localhost /////////////////////////////////////////
 function createHTML() {
-    function openPdfFile(bs64) {
-        // Creates a download function as a string:
-        const downloadFunction =
-            ' function downloadFunction (bs64String) '
-            + ' { alert(bs64String); '
-            + '   alert(bs64String); '
-            + ' } ';//[fn]
+    function openPdfFile(bs64, randomStr) {
         let pdfWindow = window.open("", "_blank", "top=10,left=10,width=555,height=1000");
             pdfWindow.document.write('<head><style> '
-            + 'body {background-color: #54544b;}'
-                + '#downloadDiv {position:absolute;top:0%;left:0%;background-color:#a3a183;font-color:#444d38;width:25%;height:10%;z-index:2;'
-            + 'border:0px solid;border-radius:0px 0px 15px 0px;text-align: center;cursor:pointer;'
-            + 'display: flex; align-items: center;justify-content: center;}'
+                + 'body {background-color: #332d26;}'
+            + '#downloadDiv {position:absolute;top:0%;left:0%;background-color:#a3a183;width:40%;height:10%;z-index:2;'
+            + 'border:0px solid;border-radius:0px 0px 15px 0px;text-align: center;'
+                + 'display: flex; align-items: center;justify-content: center;}'
+                + '.downloadLink{color:#fff;font-family:Helvetica,sans-serif;font-size:14pt;'
+                + 'font-weight:bold;text-shadow: 2px 2px 2px #332d26;}'
             + '</style>');
-            pdfWindow.document.write('<script>' + downloadFunction + '</' + 'script>');
             pdfWindow.document.write('</head>');
             pdfWindow.document.write("<body>");//[body]
             pdfWindow.document.write("<embed width='100%' height='100%' src='data:application/pdf;base64, " + encodeURI(bs64) + "'></embed>");//[pdfWindow]
             pdfWindow.document.write("<div id='downloadDiv'></div>");//[Download]
             //Link for download PDF file
-            var downloadLink = document.createElement('a');
+            const downloadLink = document.createElement('a');
+        downloadLink.setAttribute("class", "downloadLink"); 
+        downloadLink.setAttribute("style", "this.style.color = '#faf7ac';text-decoration: none;");
+        downloadLink.setAttribute("onmouseover", "this.style.color = '#faf7ac';");
+        downloadLink.setAttribute("onmouseout", "this.style.color = '#fff';");
+        downloadLink.setAttribute("onmousedown", "this.style.color = '#f0a13a';");
             downloadLink.innerHTML = 'Download PDF file';
-            downloadLink.download = 'file.pdf';
+        downloadLink.download = randomStr + '.pdf';
             downloadLink.href = 'data:application/octet-stream;base64,' + bs64;
             pdfWindow.document.getElementById('downloadDiv').appendChild(downloadLink);
             pdfWindow.document.write("</body>");//[body]
@@ -87,12 +88,22 @@ function createHTML() {
     };//[fn openPdfFile]
     
     let setHeader = '<style> '
-        + 'body {background-color: #54544b;}'
-        + '.containerDiv {position:absolute;top:25%;left:25%;background-color:#a3a183;width:50%;height:50%;}'
-        + '.childDiv{position: relative;top:11px; left:11px;background-color:#bade8a;margin-bottom:11px;width:95%;height:25px;cursor:pointer;}'
+        + 'body {background-color: #332d26;}'
+        + '.containerDiv {position:fixed;top:50%;left:50%;background-color:#a3a183;width:25%;height:auto; max-height: 50%;padding-bottom:5px;'
+        + 'transform:translate(-50%,-50%);border:0px solid;border-radius:0px 0px 10px 10px;overflow:auto;}'
+        + '.childDiv{position:relative;top:50%;left:50%;background-color:#faf7ac;margin-bottom:11px;width:95%;height:25px;cursor:pointer;'
+        + 'color:#54544b;font-family:Helvetica,sans-serif;font-size:11pt;font-weight:bold;'
+        + 'border:0px solid;border-radius:5px 5px 5px 5px;text-align: center;'
+        + 'transform:translate(-50%,-50%);'
+        + 'display: flex; align-items: center;justify-content: center;}'
+        + '#linksHeader{color:#ffffff;font-family:Helvetica,sans-serif;font-size:22pt;font-weight:bold;'
+        + 'display: flex; align-items: center;justify-content: center;'
+        + 'padding-bottom:22px;text-shadow: 2px 2px 2px #332d26;}'
         + '</style>';   /*setHeader*/
 
-    let setBody = '<div class=\"containerDiv\">' + allDivs + '</div>'
+    let linksHeader = '<p id="linksHeader">Click to open a file</p>';
+
+    let setBody = '<div class=\"containerDiv\">' + linksHeader + allDivs + '</div>'
         + '<script>' + openPdfFile + '</script>';  /*setBody*/
 
     return '<!DOCTYPE html>'

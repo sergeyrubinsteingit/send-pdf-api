@@ -19,6 +19,7 @@ let iter = 0;
 const iterLimit = 3;
 const pathToJSON = __dirname + '//source/files_list.json';
 let parseJSONdata = [];
+
 createPdf();
 function createPdf() {
     //The section below is a preparation of JSON for updating:
@@ -44,7 +45,10 @@ function createPdf() {
     //Removing 1st element in JSON:
     parseJSONdata.splice(0, 1);
     ///////////////////////////////////////////////////////
+    let img_idx = 0; // This for a digit in image's name; if it is over 3, it restored to 0, to let thee same images be used again.
     for (iter = 0; iter < iterLimit; iter++) {
+        img_idx += 1;
+        img_idx > 3 ? img_idx = 1 : null;
         const pathToPdf = paTh.join(__dirname, 'source/dummi_pdf_' + iter + '.pdf');
         let createSamplePdf = new Object;
 
@@ -61,8 +65,9 @@ function createPdf() {
         })
             .then(createSamplePdf);//[Promise]
         // Generating pdf file:
+        let getRandomString = '';
+
         createSamplePdf = new Promise((reSolve, reJect) => {
-            //console.log(randomString(15));
             const theText = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
                 + ' Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,'
                 + ' when an unknown printer took a galley of type and scrambled it to make a type specimen book.'
@@ -72,9 +77,9 @@ function createPdf() {
 
             docObj = new PDFDocument({ margin: 30, size: 'A4' }); // Create pdf page of size A4
             docObj.pipe(fs.createWriteStream(pathToPdf));  // Node Stream to save pdf in the root dir
-            docObj.rect(90, 45, 420, 790).fillAndStroke('#ddd', '#ddd').stroke();//[Rectangle frame]
-            let getRandomString = randomString(15);
-            docObj.fillColor('#999999')
+            docObj.rect(90, 45, 420, 790).fillAndStroke('#babaaf', '#babaaf').stroke();//[Rectangle frame]
+            getRandomString = randomString(15);
+            docObj.fillColor('#332d26')
                 .font('Helvetica-Bold')
                 .fontSize(24)
                 .text(`${getRandomString}`, 112, 102); //[randomString]
@@ -84,38 +89,38 @@ function createPdf() {
                 .text(`${getRandomString}`, 110, 100); //[randomString]
 
             docObj.moveDown(2);
-            docObj.image('source/dog_' + iter + '.jpg', 90, 100, { fit: [420, 400], align: 'left', valign: 'center' })
-                .font('Helvetica-Bold').fontSize(10)
-                .text('Dog-' + iter + '.jpg', 110, 430); // adding image
+            docObj.image('source/dog_' + (img_idx-1) + '.jpg', 90, 100, { fit: [420, 400], align: 'left', valign: 'center' })
+                .font('Helvetica-Bold').fontSize(12)
+                .text('Picture #' + img_idx + '.jpg', 110, 130); // adding image
             docObj.moveDown(11);
-            docObj.fillColor('#444d38').font('Helvetica-Bold').fontSize(22).text(`The Dog`, 110, 450); // adding text
+            docObj.fillColor('#332d26').font('Helvetica-Bold').fontSize(22).text(`The Dog`, 110, 450); // adding text
             docObj.moveDown(0.5);
-            docObj.fillColor('#7d8276').font('Helvetica').fontSize(14).text(` ${theText}`, {
+            docObj.fillColor('#594f42').font('Helvetica').fontSize(14).text(`${theText}`, {
                 columns: 2,
                 columnGap: 15,
                 height: 220,
                 width: 350,
                 align: 'left'
-            }, 500, 110 ); // adding text
+            }, 500, 110); // adding text
             docObj.end(); // closing file's formation
-            return docObj;
+            //return docObj;
         })
             .then(console.log('createSamplePdf, End of Promise'))
-            .then(setTimeout(() => { fs.existsSync(pathToPdf) ? getBase64() : console.log('File does not exist.') }, 1000))
+            .then(setTimeout(() => { fs.existsSync(pathToPdf) ? getBase64(getRandomString) : console.log('File does not exist.') }, 1000));
 
-        let encodedFile = new Object();
-
-        function getBase64() {
+        function getBase64(getRandomString) {
+            console.log('getBase64 > ' + getRandomString);
             new Promise((resolve, reject) => {
                 const buFFer = fs.readFileSync(pathToPdf);
                 console.log(Buffer.isBuffer(buFFer) ? 'Buffer is created' : 'Buffer was not created');
-                baSe64.encode(buFFer).then(base64String => writeToJSON(base64String))
+                baSe64.encode(buFFer).then(base64String => writeToJSON(base64String, getRandomString))
             })
         }//[fn]
 
-        function writeToJSON(base64String) {
+        function writeToJSON(base64String, getRandomString) {
+            console.log('getRandomString  ' + getRandomString);
             //Creating a new data block to append to json:
-            let appendixToJSON = { base64String };
+            let appendixToJSON = { 'bs64str':base64String, 'randStr': getRandomString };
             //Adding a new data block to array to be writen to JSON:
             parseJSONdata.push(appendixToJSON);
             //A new array to be written in JSON instead of former one,
@@ -141,7 +146,7 @@ function createPdf() {
                 console.log("File read failed:", err);
                 return;
             }
-            //console.log("File data:", jsonString);
+            console.log("File data:", jsonString);
         });
     }
 }//[fn]

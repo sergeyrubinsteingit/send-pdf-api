@@ -7,15 +7,7 @@ const path = require('path');
 const openurl = require('openurl');
 const exPress = require('express')();
 
-//const httpRequest = require('https');
-//const formData = new require('form-data')();
-//const formData = require('form-data');
-//const fetCh = require('node-fetch');
-//const getHeaders = new fetCh.Headers();
-//const js_pdf = require('jspdf');
-//var blOb = require('blob');
-//const { StringDecoder } = require('string_decoder');
-
+// Path to create a PDF in:
 const pathToPdf = path.join(__dirname, 'source/sample_form.pdf');
 let createSamplePdf = new Object;
 
@@ -34,12 +26,10 @@ new Promise((resolve, reject) => {
 
 // Generating pdf file:
 createSamplePdf = new Promise((reSolve, reJect) => {
-    console.log()
     docObj = new PDFDocument({ margin: 30, size: 'A4' }); // Create pdf
     docObj.pipe(fs.createWriteStream(pathToPdf));  // Node Stream to save pdf in the root dir
     docObj.fontSize(18).text('The test-form', 100, 100); // adding text
     docObj.image('source/cesky-krumlov.jpg', { fit: [800, 300], align: 'center', valign: 'center' }); // adding image
-
     docObj.addPage().fillColor('red')
         .text("To the top of the document.", 100, 100)
         .link(100, 100, 160, 30, '#top'); // adding page

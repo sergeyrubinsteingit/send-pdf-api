@@ -27,7 +27,6 @@ for (key_ in parseJson) {
     }//[for]
 }//[for]
         //console.log(bs64strings + "  < bs64strings \n\n\n");
-
 let allDivs = '';
 for (let i = 0; i < bs64strings.length; i++) {
     setTimeout(() => {
@@ -35,25 +34,24 @@ for (let i = 0; i < bs64strings.length; i++) {
         allDivs += divString;
     },500);//[setTimeout]
 };//[for]
-//console.log(allDivs);
 
 // Creating a local server ////////////////////////////////////////////////////////
 reqHttp.createServer(function (req_, res_) {
     let generateHTML = createHTML();
     res_.writeHead(200, {
-        'Content-Type': 'text/html',
-        'Content-Length': generateHTML.length
-    });//[writeHead]
+            'Content-Type': 'text/html',
+            'Content-Length': generateHTML.length
+        });//[writeHead]
     res_.end(generateHTML);
-    console.log('Remote Client Page - TEST');  ////
-}).listen(setPort,
-        setTimeout(() => {
-            openurl.open('http://localhost:' + setPort);
-            console.log(`Server is running on localhost-> ${setPort}`);
-        }, 500),//[setTimeout]
-        setTimeout(() => {
-            process.exit();
-}, 1500)//[setTimeout]
+
+        }).listen(setPort,
+                setTimeout(() => {
+                    openurl.open('http://localhost:' + setPort);
+                    console.log(`Server is running on localhost-> ${setPort}`);
+                }, 500),//[setTimeout]
+                setTimeout(() => {
+                    process.exit();
+        }, 1500)//[setTimeout]
 );//[fn]
 
 // Creates a html page to be open on localhost /////////////////////////////////////////
@@ -74,14 +72,14 @@ function createHTML() {
             pdfWindow.document.write("<div id='downloadDiv'></div>");//[Download]
             //Link for download PDF file
             const downloadLink = document.createElement('a');
-        downloadLink.setAttribute("class", "downloadLink"); 
-        downloadLink.setAttribute("style", "this.style.color = '#faf7ac';text-decoration: none;");
-        downloadLink.setAttribute("onmouseover", "this.style.color = '#faf7ac';");
-        downloadLink.setAttribute("onmouseout", "this.style.color = '#fff';");
-        downloadLink.setAttribute("onmousedown", "this.style.color = '#f0a13a';");
-            downloadLink.innerHTML = 'Download PDF file';
-        downloadLink.download = randomStr + '.pdf';
-            downloadLink.href = 'data:application/octet-stream;base64,' + bs64;
+                downloadLink.setAttribute("class", "downloadLink"); 
+                downloadLink.setAttribute("style", "this.style.color = '#faf7ac';text-decoration: none;");
+                downloadLink.setAttribute("onmouseover", "this.style.color = '#faf7ac';");
+                downloadLink.setAttribute("onmouseout", "this.style.color = '#fff';");
+                downloadLink.setAttribute("onmousedown", "this.style.color = '#f0a13a';");
+                downloadLink.innerHTML = 'Download PDF file';
+                downloadLink.download = randomStr + '.pdf';
+                downloadLink.href = 'data:application/octet-stream;base64,' + bs64;
             pdfWindow.document.getElementById('downloadDiv').appendChild(downloadLink);
             pdfWindow.document.write("</body>");//[body]
             pdfWindow.document.close();

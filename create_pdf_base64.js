@@ -76,37 +76,39 @@ function createPdf() {
                 + 'and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.';
 
             docObj = new PDFDocument({ margin: 30, size: 'A4' }); // Create pdf page of size A4
-            docObj.pipe(fs.createWriteStream(pathToPdf));  // Node Stream to save pdf in the root dir
-            docObj.rect(90, 45, 420, 790).fillAndStroke('#babaaf', '#babaaf').stroke();//[Rectangle frame]
-            getRandomString = randomString(15);
-            docObj.fillColor('#332d26')
-                .font('Helvetica-Bold')
-                .fontSize(24)
-                .text(`${getRandomString}`, 112, 102); //[randomString]
-            docObj.fillColor('#ffffff')
-                .font('Helvetica-Bold')
-                .fontSize(24)
-                .text(`${getRandomString}`, 110, 100); //[randomString]
+                docObj.pipe(fs.createWriteStream(pathToPdf));  // Node Stream to save pdf in the root dir
+                docObj.rect(90, 45, 420, 790).fillAndStroke('#babaaf', '#babaaf').stroke();//[Rectangle frame]
+                getRandomString = randomString(15);
+                docObj.fillColor('#332d26')
+                    .font('Helvetica-Bold')
+                    .fontSize(24)
+                    .text(`${getRandomString}`, 112, 102); //[randomString]
+                docObj.fillColor('#ffffff')
+                    .font('Helvetica-Bold')
+                    .fontSize(24)
+                    .text(`${getRandomString}`, 110, 100); //[randomString]
 
-            docObj.moveDown(2);
-            docObj.image('source/dog_' + (img_idx-1) + '.jpg', 90, 100, { fit: [420, 400], align: 'left', valign: 'center' })
-                .font('Helvetica-Bold').fontSize(12)
-                .text('Picture #' + img_idx + '.jpg', 110, 130); // adding image
-            docObj.moveDown(11);
-            docObj.fillColor('#332d26').font('Helvetica-Bold').fontSize(22).text(`The Dog`, 110, 450); // adding text
-            docObj.moveDown(0.5);
-            docObj.fillColor('#594f42').font('Helvetica').fontSize(14).text(`${theText}`, {
-                columns: 2,
-                columnGap: 15,
-                height: 220,
-                width: 350,
-                align: 'left'
-            }, 500, 110); // adding text
-            docObj.end(); // closing file's formation
-            //return docObj;
-        })
-            .then(console.log('createSamplePdf, End of Promise'))
-            .then(setTimeout(() => { fs.existsSync(pathToPdf) ? getBase64(getRandomString) : console.log('File does not exist.') }, 1000));
+                docObj.moveDown(2);
+                docObj.image('source/dog_' + (img_idx-1) + '.jpg', 90, 100, { fit: [420, 400], align: 'left', valign: 'center' })
+                    .font('Helvetica-Bold').fontSize(12)
+                    .text('Picture #' + img_idx + '.jpg', 110, 130); // adding image
+                docObj.moveDown(11);
+                docObj.fillColor('#332d26').font('Helvetica-Bold').fontSize(22).text(`The Dog`, 110, 450); // adding text
+                docObj.moveDown(0.5);
+                docObj.fillColor('#594f42').font('Helvetica').fontSize(14).text(`${theText}`,
+                        {
+                            columns: 2,
+                            columnGap: 15,
+                            height: 220,
+                            width: 350,
+                            align: 'left'
+                        },
+                        500, 110); // adding text
+                    docObj.end(); // closing file's formation
+                    //return docObj;
+                })
+                .then(console.log('createSamplePdf, End of Promise'))
+                .then(setTimeout(() => { fs.existsSync(pathToPdf) ? getBase64(getRandomString) : console.log('File does not exist.') }, 1000));
 
         function getBase64(getRandomString) {
             console.log('getBase64 > ' + getRandomString);
